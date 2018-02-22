@@ -19,12 +19,18 @@ def affine_forward(x, w, b):
   - out: output, of shape (N, M)
   - cache: (x, w, b)
   """
+
+
   out = None
   #############################################################################
   # TODO: Implement the affine forward pass. Store the result in out. You     #
   # will need to reshape the input into rows.                                 #
   #############################################################################
   pass
+  #print x.shape[1:], x.shape[0], np.prod(x.shape[1:])
+  xRes = x.reshape((x.shape[0], np.prod(x.shape[1:])))
+  #print "xRes shape: ", xRes.shape
+  out = np.dot(xRes, w) + b       # (N, M)
   #############################################################################
   #                             END OF YOUR CODE                              #
   #############################################################################
@@ -53,6 +59,12 @@ def affine_backward(dout, cache):
   # TODO: Implement the affine backward pass.                                 #
   #############################################################################
   pass
+  dx = np.dot(dout, w.T).reshape(x.shape[0], *x.shape[1:])      # N,d1,...,dk
+  print "dx shape: ", dx.shape
+
+  xRes = x.reshape((x.shape[0], np.prod(x.shape[1:]))) 
+  dw = np.dot(xRes.T, dout)
+  db = np.sum(dout, axis = 0)      #or np.dot(np.ones(x.shape[0]).T, dout)   # (M,)
   #############################################################################
   #                             END OF YOUR CODE                              #
   #############################################################################
