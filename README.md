@@ -1,2 +1,5 @@
-Details about this assignment can be found [on the course webpage](https://compsci697l.github.io/assignments.html).
-# Convolutional-Neural-Networks
+#Convolutional-Neural-Networks  
+(1) Fully-connected Neural Network  
+(2) Batch Normalization 
+(3) Dropout
+(4) Convolutional Neural Networks on CIFAR-10
