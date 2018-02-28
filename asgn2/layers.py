@@ -27,10 +27,10 @@ def affine_forward(x, w, b):
   # will need to reshape the input into rows.                                 #
   #############################################################################
   #pass
-  #print x.shape[1:], x.shape[0], np.prod(x.shape[1:])
-  xRes = x.reshape((x.shape[0], np.prod(x.shape[1:])))
+  xRes = x.reshape((x.shape[0], np.prod(x.shape[1:])))       #N, D
   #print "xRes shape: ", xRes.shape
-  out = np.dot(xRes, w) + b       # (N, M)
+  out = np.dot(xRes, w) + b        # (N, M)
+
   #############################################################################
   #                             END OF YOUR CODE                              #
   #############################################################################
@@ -60,7 +60,7 @@ def affine_backward(dout, cache):
   #############################################################################
   #pass
   dx = np.dot(dout, w.T).reshape(x.shape[0], *x.shape[1:])      # N,d1,...,dk
-  print "dx shape: ", dx.shape
+  #print "dx shape: ", dx.shape
 
   xRes = x.reshape((x.shape[0], np.prod(x.shape[1:])))     # (N,D)
   dw = np.dot(xRes.T, dout)                                #(D,M)
@@ -86,7 +86,13 @@ def relu_forward(x):
   #############################################################################
   # TODO: Implement the ReLU forward pass.                                    #
   #############################################################################
-  pass
+  #pass
+  import time
+  time0 = time.time()
+  out = x
+  out[out<0] = 0     #faster than np.maximum(0, x)       # or x[x<0] = 0 (N, M)
+  elapsed = time.time() - time0
+  print ('elpase' , elapsed)
   #############################################################################
   #                             END OF YOUR CODE                              #
   #############################################################################
@@ -110,6 +116,7 @@ def relu_backward(dout, cache):
   # TODO: Implement the ReLU backward pass.                                   #
   #############################################################################
   pass
+  
   #############################################################################
   #                             END OF YOUR CODE                              #
   #############################################################################
