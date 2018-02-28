@@ -87,12 +87,9 @@ def relu_forward(x):
   # TODO: Implement the ReLU forward pass.                                    #
   #############################################################################
   #pass
-  import time
-  time0 = time.time()
   out = x
-  out[out<0] = 0     #faster than np.maximum(0, x)       # or x[x<0] = 0 (N, M)
-  elapsed = time.time() - time0
-  print ('elpase' , elapsed)
+  out[out<0] = 0     #faster than np.maximum(0, x)   # or x[x<0] = 0      (N, M)
+
   #############################################################################
   #                             END OF YOUR CODE                              #
   #############################################################################
@@ -117,6 +114,10 @@ def relu_backward(dout, cache):
   #############################################################################
   pass
   
+  dx = np.array(dout)             # , copy=True)
+  dx[x<=0] = 0
+  #dx[x > 0] = 1
+  print ('dx: ', dx)
   #############################################################################
   #                             END OF YOUR CODE                              #
   #############################################################################
