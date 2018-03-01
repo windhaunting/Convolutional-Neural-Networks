@@ -45,7 +45,14 @@ class TwoLayerNet(object):
     # weights and biases using the keys 'W1' and 'b1' and second layer weights #
     # and biases using the keys 'W2' and 'b2'.                                 #
     ############################################################################
-    pass
+    #pass
+    inputReshapeDim = np.prod(input_dim)
+    self.params["W1"] = weight_scale * np.random.randn(inputReshapeDim, hidden_dim)  # * np.sqrt(2.0/(inputReshapeDim))    # initalize weights
+    self.params["b1"] = np.zeros(hidden_dim)              # initalize bias
+    self.params["W2"] = weight_scale * np.random.randn(hidden_dim, num_classes)   # * np.sqrt(2.0/(hidden_dim))            # initalize weights
+    self.params["b2"] = np.zeros(num_classes)              # initalize bias
+
+   
     ############################################################################
     #                             END OF YOUR CODE                             #
     ############################################################################
