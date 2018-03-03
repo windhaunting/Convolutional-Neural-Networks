@@ -49,7 +49,7 @@ class TwoLayerNet(object):
     inputReshapeDim = np.prod(input_dim)
     self.params["W1"] = weight_scale * np.random.randn(inputReshapeDim, hidden_dim)  # * np.sqrt(2.0/(inputReshapeDim))    # initalize weights
     self.params["b1"] = np.zeros(hidden_dim)              # initalize bias
-    self.params["W2"] = weight_scale * np.random.randn(hidden_dim, num_classes)   # * np.sqrt(2.0/(hidden_dim))            # initalize weights
+    self.params["W2"] = weight_scale * np.random.randn(hidden_dim, num_classes)      # * np.sqrt(2.0/(hidden_dim))            # initalize weights
     self.params["b2"] = np.zeros(num_classes)              # initalize bias
 
    
@@ -82,7 +82,16 @@ class TwoLayerNet(object):
     # TODO: Implement the forward pass for the two-layer net, computing the    #
     # class scores for X and storing them in the scores variable.              #
     ############################################################################
-    pass
+    #pass
+    W1 = self.params["W1"]
+    b1 = self.params["b1"]
+    W2 = self.params["W2"]
+    b2 = self.params["b2"]
+
+    out1, cache1 = affine_relu_forward(X, W1, b1)
+    out, cache2 = affine_forward(out1, W2, b2)
+    scores = out
+
     ############################################################################
     #                             END OF YOUR CODE                             #
     ############################################################################
@@ -102,7 +111,22 @@ class TwoLayerNet(object):
     # automated tests, make sure that your L2 regularization includes a factor #
     # of 0.5 to simplify the expression for the gradient.                      #
     ############################################################################
-    pass
+    #pass
+    loss, ds = softmax_loss(scores, y) 
+
+    dout1, dw2, db2 = affine_backward(ds, cache2)        # affine backward
+    grads["W2"] = dw2
+    grads["b2"] = db2
+
+    dx, dw1, db1 = affine_relu_backward(dout1, cache1)   # relu backward -- affine backward
+    grads["W1"] = dw1
+    grads["b1"] = db1
+    
+    loss += 0.5 * self.reg * ((W1**2).sum() + (W2**2).sum() )        # regularization
+
+    grads["W2"] += self.reg * W2                     
+    grads["W1"] += self.reg * W1
+
     ############################################################################
     #                             END OF YOUR CODE                             #
     ############################################################################
