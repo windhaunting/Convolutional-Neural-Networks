@@ -187,7 +187,16 @@ def batchnorm_forward(x, gamma, beta, bn_param):
     # the momentum variable to update the running mean and running variance,    #
     # storing your result in the running_mean and running_var variables.        #
     #############################################################################
-    pass
+    #pass
+    batch_mean = np.mean(x, axis=0)
+    batch_var = np.var(x, axis=0)
+    x_hat = (x-batch_mean)/np.sqrt(batch_var + eps)         # normalize
+    out = gamma*x_hat + beta
+    cache = (x, gamma, beta, batch_mean, batch_var, x_hat, eps)
+
+    running_mean = momentum * running_mean + (1 - momentum) * batch_mean
+    running_var = momentum * running_var + (1 - momentum) * batch_var
+
     #############################################################################
     #                             END OF YOUR CODE                              #
     #############################################################################
@@ -198,7 +207,10 @@ def batchnorm_forward(x, gamma, beta, bn_param):
     # and shift the normalized data using gamma and beta. Store the result in   #
     # the out variable.                                                         #
     #############################################################################
-    pass
+    #pass
+    x_hat = x - running_mean / np.sqrt(running_var + eps)   
+    out = gamma*x_hat + beta
+
     #############################################################################
     #                             END OF YOUR CODE                              #
     #############################################################################
@@ -234,7 +246,18 @@ def batchnorm_backward(dout, cache):
   # TODO: Implement the backward pass for batch normalization. Store the      #
   # results in the dx, dgamma, and dbeta variables.                           #
   #############################################################################
-  pass
+  #pass
+  x, gamma, beta, batch_mean, batch_var, x_hat, eps = cache
+  M = x.shape[0]                 #mini batch sample number
+
+  dx_hat = dout * gamma             						      # dl/d_x_hat
+  dvar = np.sum(dx_hat * (x-batch_mean)* (-1.0)/2.0*((batch_var + eps)**(-3.0/2.0)), axis=0)          # dl/dvar
+  dmean = np.sum(dx_hat * (-1.0)/np.sqrt(batch_var+eps), axis=0) + dvar * (np.sum(-2.0*(x-batch_mean), axis=0)/M)       # dl/dmean
+  dx = dx_hat*np.ones_like(x)/np.sqrt(batch_var+eps)  + dvar *2.0*(x-batch_mean)/M + dmean*np.ones_like(x)/M         # dl/dx
+  dgamma = np.sum(dout * x_hat, axis=0)										    # dl/dgamma
+  dbeta = np.sum(dout, axis=0)	
+  
+
   #############################################################################
   #                             END OF YOUR CODE                              #
   #############################################################################
@@ -264,7 +287,15 @@ def batchnorm_backward_alt(dout, cache):
   # should be able to compute gradients with respect to the inputs in a       #
   # single statement; our implementation fits on a single 80-character line.  #
   #############################################################################
-  pass
+  #pass
+  x, gamma, beta, batch_mean, batch_var, x_hat, eps = cache
+  M = x.shape[0]                 #mini batch sample number
+
+  dx_hat = dout * gamma             						      # dl/d_x_hat
+  dx = dx_hat*np.ones_like(x)/np.sqrt(batch_var+eps)  +  (np.sum(dx_hat * (x-batch_mean)* (-1.0)/2.0*((batch_var + eps)**(-3.0/2.0)), axis=0)) *2.0*(x-batch_mean)/M + (np.sum(dx_hat * (-1.0)/np.sqrt(batch_var+eps), axis=0) + (np.sum(dx_hat * (x-batch_mean)* (-1.0)/2.0*((batch_var + eps)**(-3.0/2.0)), axis=0) ) * (np.sum(-2.0*(x-batch_mean), axis=0)/M))*np.ones_like(x)/M         # dl/dx
+  dgamma = np.sum(dout * x_hat, axis=0)										    # dl/dgamma
+  dbeta = np.sum(dout, axis=0)	
+
   #############################################################################
   #                             END OF YOUR CODE                              #
   #############################################################################
@@ -303,7 +334,10 @@ def dropout_forward(x, dropout_param):
     # TODO: Implement the training phase forward pass for inverted dropout.   #
     # Store the dropout mask in the mask variable.                            #
     ###########################################################################
-    pass
+    #pass
+    mask = (np.random.rand(*x.shape) < (1-p)) / (1-p)
+    out = x*mask           # drop
+
     ###########################################################################
     #                            END OF YOUR CODE                             #
     ###########################################################################
@@ -311,7 +345,8 @@ def dropout_forward(x, dropout_param):
     ###########################################################################
     # TODO: Implement the test phase forward pass for inverted dropout.       #
     ###########################################################################
-    pass
+    #pass
+    out = x
     ###########################################################################
     #                            END OF YOUR CODE                             #
     ###########################################################################
@@ -338,7 +373,8 @@ def dropout_backward(dout, cache):
     ###########################################################################
     # TODO: Implement the training phase backward pass for inverted dropout.  #
     ###########################################################################
-    pass
+    #pass
+    dx = dout * mask
     ###########################################################################
     #                            END OF YOUR CODE                             #
     ###########################################################################
@@ -377,7 +413,6 @@ def conv_forward_naive(x, w, b, conv_param):
   #############################################################################
   pass
   #############################################################################
-  #                             END OF YOUR CODE                              #
   #############################################################################
   cache = (x, w, b, conv_param)
   return out, cache
