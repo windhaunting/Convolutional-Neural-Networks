@@ -611,7 +611,23 @@ def spatial_batchnorm_forward(x, gamma, beta, bn_param):
   # version of batch normalization defined above. Your implementation should  #
   # be very short; ours is less than five lines.                              #
   #############################################################################
-  pass
+  #pass
+  '''
+    batch_mean = np.mean(x, axis=0)
+    batch_var = np.var(x, axis=0)
+    x_hat = (x-batch_mean)/np.sqrt(batch_var + eps)         # normalize
+    out = gamma*x_hat + beta
+    cache = (x, gamma, beta, batch_mean, batch_var, x_hat, eps)
+
+    running_mean = momentum * running_mean + (1 - momentum) * batch_mean
+    running_var = momentum * running_var + (1 - momentum) * batch_var
+
+
+  '''
+  N, C, H, W = x.shape
+  xReshape = x.transpose(0, 2, 3, 1).reshape(N * H * W, C)                     # spatial batch normalization computes a mean and variance for each of the `C` feature channels
+  out, cache = batchnorm_forward(xReshape, gamma, beta, bn_param)
+  out = out.reshape(N, H, W, C).transpose(0, 3, 1, 2)
   #############################################################################
   #                             END OF YOUR CODE                              #
   #############################################################################
@@ -641,7 +657,12 @@ def spatial_batchnorm_backward(dout, cache):
   # version of batch normalization defined above. Your implementation should  #
   # be very short; ours is less than five lines.                              #
   #############################################################################
-  pass
+  #pass
+  N, C, H, W = dout.shape
+  dout = dout.transpose(0, 2, 3, 1).reshape(N*H*W, C)
+  dx, dgamma, dbeta = batchnorm_backward(dout, cache)            # batchnorm_backward_alt
+  print ("dx shape: ", dx.shape)
+  dx = dx.reshape(N, H, W, C).transpose(0, 3, 1, 2)
   #############################################################################
   #                             END OF YOUR CODE                              #
   #############################################################################
@@ -698,3 +719,68 @@ def softmax_loss(x, y):
   dx[np.arange(N), y] -= 1
   dx /= N
   return loss, dx
+
+
+
+#add by fubao
+
+def leakyRelu_forward(x):
+  """
+  Computes the forward pass for a layer of leaky rectified linear units (ReLUs).
+
+  Input:
+  - x: Inputs, of any shape
+
+  Returns a tuple of:
+  - out: Output, of the same shape as x
+  - cache: x
+  """
+  alpha = 0.01                 # used for leaky relu  < 0
+
+  out = None
+  #############################################################################
+  # TODO: Implement the ReLU forward pass.                                    #
+  #############################################################################
+  #pass
+  out = np.array(x)    		      # copy
+  out[out<0] = out[out<0] * alpha      #  (N, M)
+
+  #############################################################################
+  #                             END OF YOUR CODE                              #
+  #############################################################################
+  cache = x, alpha
+  return out, cache
+
+
+
+
+def leakyRelu_backward(dout, cache):
+  """
+  Computes the backward pass for a layer of rectified linear units (ReLUs).
+
+  Input:
+  - dout: Upstream derivatives, of any shape
+  - cache: Input x, of same shape as dout
+
+  Returns:
+  - dx: Gradient with respect to x
+  """
+  dx = None
+  x, alpha = cache
+  #############################################################################
+  # TODO: Implement the ReLU backward pass.                                   #
+  #############################################################################
+  #pass
+  
+  dx = np.array(dout)    # copy
+
+  dx[x<=0] = alpha
+
+  #print ("dout:, dx", dout, dx)
+
+  #############################################################################
+  #                             END OF YOUR CODE                              #
+  #############################################################################
+
+  return dx
+
